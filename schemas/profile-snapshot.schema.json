@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Daily Profile Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subject_id", "snapshot_date", "subject_type", "data_status", "facts"],
+  "properties": {
+    "subject_id": { "type": "string", "pattern": "^SYN-[A-Z0-9-]+$" },
+    "snapshot_date": { "type": "string", "format": "date" },
+    "subject_type": { "enum": ["individual", "professional", "organization", "partner_candidate"] },
+    "data_status": { "enum": ["ready", "late", "blocked"] },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "days_since_activity": { "type": ["integer", "null"], "minimum": 0 },
+        "recent_usage_count": { "type": ["integer", "null"], "minimum": 0 },
+        "available_units_band": { "enum": ["unknown", "none", "low", "medium", "high"] },
+        "has_prior_purchase": { "type": "boolean" },
+        "organization_signal": { "enum": ["none", "unverified", "verified"] }
+      }
+    }
+  }
+}

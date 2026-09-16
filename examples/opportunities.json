@@ -1,0 +1,28 @@
+[
+  {
+    "opportunity_id": "SYN-OPP-001",
+    "subject_id": "SYN-ORG-001",
+    "snapshot_date": "2026-01-15",
+    "scenario": "renewal",
+    "rule_version": "RULE-RENEWAL-1.0",
+    "value_tier": "A",
+    "lifecycle": "active",
+    "priority": "P1",
+    "evidence": ["has_prior_purchase=true", "recent_usage_count=8", "available_units_band=low"],
+    "experiment_group": "treatment",
+    "review_status": "pending"
+  },
+  {
+    "opportunity_id": "SYN-OPP-002",
+    "subject_id": "SYN-PRO-002",
+    "snapshot_date": "2026-01-15",
+    "scenario": "strategic_review",
+    "rule_version": "RULE-STRATEGIC-1.0",
+    "value_tier": "S",
+    "lifecycle": "at_risk",
+    "priority": "P1",
+    "evidence": ["organization_signal=unverified", "recent_usage_count=12", "multi_user_signal=true"],
+    "experiment_group": "not_assigned",
+    "review_status": "pending"
+  }
+]
