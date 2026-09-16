@@ -12,12 +12,14 @@
     "facts": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["days_since_activity", "recent_usage_count", "available_units_band", "has_prior_purchase", "organization_signal", "contact_status"],
       "properties": {
         "days_since_activity": { "type": ["integer", "null"], "minimum": 0 },
         "recent_usage_count": { "type": ["integer", "null"], "minimum": 0 },
         "available_units_band": { "enum": ["unknown", "none", "low", "medium", "high"] },
         "has_prior_purchase": { "type": "boolean" },
-        "organization_signal": { "enum": ["none", "unverified", "verified"] }
+        "organization_signal": { "enum": ["none", "unverified", "verified", "unknown"] },
+        "contact_status": { "enum": ["clear", "hold", "unknown"] }
       }
     }
   }

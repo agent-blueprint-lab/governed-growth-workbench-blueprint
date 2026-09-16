@@ -1,16 +1,16 @@
 # Publication Safety Checklist
 
-公开发布前至少执行以下检查：
+Complete this before every public pull request and release.
 
-- [ ] 仓库从空目录构建，不直接复制生产工程或历史提交；
-- [ ] 只保留通用角色、场景、流程和合成样例；
-- [ ] 真实组织、产品、人员、域名、表名、字段名和内部路径已删除；
-- [ ] 电话、邮箱、地址、账号、订单、金额明细和原始内容不存在；
-- [ ] 密钥、令牌、证书、环境变量和部署配置不存在；
-- [ ] 示例 ID 使用 `SYN-*` 前缀；
-- [ ] 指标和阈值标为演示值或原则，不暗示真实业务表现；
-- [ ] 法律、合规、转化和收益结论没有未经验证的承诺；
-- [ ] JSON 可解析，HTML 可离线打开；
-- [ ] 安全策略、贡献规范和许可证齐全。
+- [ ] Work was created from approved public abstractions, not copied from a private production repository.
+- [ ] Examples use generic names and `SYN-*` identifiers only.
+- [ ] No real person, organization, customer, product, contact detail, raw content, screenshot, or private metric is present.
+- [ ] No internal database, field, domain, network address, local user path, credential, certificate, or environment value is present.
+- [ ] Demo parameters are clearly marked synthetic and are not described as production recommendations.
+- [ ] `python -m governed_growth_workbench verify-publication --root .` passes.
+- [ ] `make verify` passes from a clean environment.
+- [ ] The staged diff and commit metadata use a public maintainer identity.
+- [ ] CI is green and the pull-request privacy checklist is complete.
+- [ ] Release notes do not claim users, adoption, performance, or deployments without public evidence.
 
-本清单只能降低误发布风险，不能替代组织内部的安全、法务和开源审批流程。
+This checklist reduces accidental disclosure risk. It does not replace legal, security, privacy, or open-source review required by a downstream organization.

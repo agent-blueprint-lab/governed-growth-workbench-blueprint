@@ -1,45 +1,35 @@
 # Architecture
 
-## 六层结构
+## Trust boundary
 
-| 层 | 主要职责 | 关键控制 |
-|---|---|---|
-| 数据契约 | 统一主体、事件、订单、权益与任务结果 | 只读视图、更新时间、完整性检查 |
-| 事实标签 | 记录已经发生的客观事实 | SQL 可重算、字段来源可追溯 |
-| 参数与规则 | 角色 × 产品 × 场景的准入与排除条件 | 版本、审批、灰度、回滚 |
-| 机会快照 | 冻结入池时证据、优先级与实验组 | 去重、冲突消解、稳定 ID |
-| 决策辅助 | 解释原因、建议动作、生成沟通草稿 | 不补造事实、不自动执行 |
-| 任务与复盘 | 审核、分配、结果回写、增量评估 | 权限、审计、对照组、归因窗口 |
-
-## 建议的数据流
+The public package is intentionally local and read-only with respect to external systems. It accepts JSON files, validates them, computes deterministic opportunities, and writes JSON files. There are no network clients or connectors.
 
 ```text
-授权数据视图
-  → 每日主体快照
-  → 事实标签
-  → 参数化规则
-  → 候选机会
-  → 冲突消解与实验分组
-  → AI解释
-  → 人工审核
-  → 任务执行
-  → 14/30日结果回写
-  → 规则复盘
+synthetic profiles ─┐
+                    ├─ schema validation ─ rule evaluation ─ execution gate ─ opportunity JSON
+synthetic rules ────┘                          │
+                                              └────────────────── audit JSON
 ```
 
-## 三类状态必须分开
+## Components
 
-- 长期价值：例如 S/A/B/C，用于资源分配，不代表紧迫度。
-- 当前生命周期：活跃、风险、沉默、流失，用于描述近期状态。
-- 本轮优先级：P0/P1/P2，用于安排本轮跟进顺序。
+| Component | Responsibility | Safety control |
+| --- | --- | --- |
+| CLI | Parse explicit local file paths and commands | No network or implicit discovery |
+| Validation | Enforce profile, rule, output, and audit contracts | Reject unknown fields and non-synthetic IDs |
+| Rule engine | Evaluate documented conditions deterministically | No model-generated facts or side effects |
+| Execution gate | Resolve `READY`, `REVIEW`, `HOLD`, or `CONTROL` | Restrictions override value and priority |
+| Audit writer | Record generation or block reason | Stable synthetic identifiers and reason codes |
+| Publication scan | Catch common secrets and identifying patterns | Fails CI and local verification |
 
-将三类状态混成一个分数会导致“高价值但暂不紧急”无法表达。
+## Determinism
 
-## 数据迟到策略
+Opportunity IDs and control assignment use SHA-256 over synthetic subject, snapshot, rule, and rule-set identifiers. Audit timestamps are anchored to the synthetic snapshot date. The same valid input and rule-set version therefore produce byte-stable semantic output.
 
-画像只在所有关键源完成且经过缓冲窗口后运行。若关键源迟到或校验失败：
+## Data failure behavior
 
-1. 保留上次成功快照；
-2. 发送数据质量告警；
-3. 当日不产生新的执行名单；
-4. 审计日志记录缺失源和影响范围。
+Profiles marked `late` or `blocked` never reach rule evaluation. The engine emits only a `data_blocked` audit event. It does not reuse an old profile or silently treat missing values as zero.
+
+## Extension boundary
+
+Adapters for real systems are deliberately excluded. A downstream project should place approved read-only extraction outside this package, map only necessary fields into the public profile contract, and retain human approval after evaluation. Any external write or automatic action requires a new threat model.

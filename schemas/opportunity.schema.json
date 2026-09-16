@@ -3,18 +3,21 @@
   "title": "Opportunity Snapshot",
   "type": "object",
   "additionalProperties": false,
-  "required": ["opportunity_id", "subject_id", "snapshot_date", "scenario", "rule_version", "evidence", "review_status"],
+  "required": ["opportunity_id", "subject_id", "snapshot_date", "scenario", "rule_version", "ruleset_version", "value_tier", "lifecycle", "priority", "evidence", "experiment_group", "execution_status", "review_status", "synthetic"],
   "properties": {
     "opportunity_id": { "type": "string", "pattern": "^SYN-OPP-[A-Z0-9-]+$" },
     "subject_id": { "type": "string", "pattern": "^SYN-[A-Z0-9-]+$" },
     "snapshot_date": { "type": "string", "format": "date" },
     "scenario": { "enum": ["renewal", "reactivation", "strategic_review", "partner_review"] },
-    "rule_version": { "type": "string" },
+    "rule_version": { "type": "string", "pattern": "^SYN-RULE-[A-Z0-9-]+$" },
+    "ruleset_version": { "type": "string", "pattern": "^SYN-RULESET-[A-Z0-9.-]+$" },
     "value_tier": { "enum": ["S", "A", "B", "C", "unknown"] },
     "lifecycle": { "enum": ["active", "at_risk", "dormant", "lost", "unknown"] },
     "priority": { "enum": ["P0", "P1", "P2", "hold"] },
     "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
     "experiment_group": { "enum": ["treatment", "control", "not_assigned"] },
-    "review_status": { "enum": ["pending", "approved", "excluded", "deferred"] }
+    "execution_status": { "enum": ["READY", "REVIEW", "HOLD", "CONTROL"] },
+    "review_status": { "enum": ["pending", "approved", "excluded", "deferred"] },
+    "synthetic": { "const": true }
   }
 }

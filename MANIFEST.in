@@ -1,0 +1,8 @@
+include CHANGELOG.md CODE_OF_CONDUCT.md CONTRIBUTING.md GOVERNANCE.md Makefile README.zh-CN.md ROADMAP.md SECURITY.md
+recursive-include config *.json *.txt
+recursive-include docs *.md
+recursive-include examples *.json
+recursive-include prompts *.md
+recursive-include schemas *.json
+recursive-include tests *.py *.md
+recursive-include web *.html
