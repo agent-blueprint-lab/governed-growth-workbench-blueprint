@@ -1,28 +1,99 @@
 [
   {
-    "opportunity_id": "SYN-OPP-001",
-    "subject_id": "SYN-ORG-001",
+    "evidence": [
+      "days_since_activity=28",
+      "has_prior_purchase=true"
+    ],
+    "execution_status": "HOLD",
+    "experiment_group": "control",
+    "lifecycle": "dormant",
+    "opportunity_id": "SYN-OPP-C9441E8C7A97",
+    "priority": "P2",
+    "review_status": "deferred",
+    "rule_version": "SYN-RULE-REACTIVATION-001",
+    "ruleset_version": "SYN-RULESET-0.1.0",
+    "scenario": "reactivation",
     "snapshot_date": "2026-01-15",
-    "scenario": "renewal",
-    "rule_version": "RULE-RENEWAL-1.0",
-    "value_tier": "A",
-    "lifecycle": "active",
-    "priority": "P1",
-    "evidence": ["has_prior_purchase=true", "recent_usage_count=8", "available_units_band=low"],
-    "experiment_group": "treatment",
-    "review_status": "pending"
+    "subject_id": "SYN-IND-003",
+    "synthetic": true,
+    "value_tier": "B"
   },
   {
-    "opportunity_id": "SYN-OPP-002",
-    "subject_id": "SYN-PRO-002",
-    "snapshot_date": "2026-01-15",
-    "scenario": "strategic_review",
-    "rule_version": "RULE-STRATEGIC-1.0",
-    "value_tier": "S",
-    "lifecycle": "at_risk",
+    "evidence": [
+      "has_prior_purchase=true",
+      "available_units_band=low",
+      "recent_usage_count=1"
+    ],
+    "execution_status": "CONTROL",
+    "experiment_group": "control",
+    "lifecycle": "active",
+    "opportunity_id": "SYN-OPP-E8C0BF643029",
     "priority": "P1",
-    "evidence": ["organization_signal=unverified", "recent_usage_count=12", "multi_user_signal=true"],
-    "experiment_group": "not_assigned",
-    "review_status": "pending"
+    "review_status": "deferred",
+    "rule_version": "SYN-RULE-RENEWAL-001",
+    "ruleset_version": "SYN-RULESET-0.1.0",
+    "scenario": "renewal",
+    "snapshot_date": "2026-01-15",
+    "subject_id": "SYN-IND-CONTROL-005",
+    "synthetic": true,
+    "value_tier": "A"
+  },
+  {
+    "evidence": [
+      "has_prior_purchase=true",
+      "available_units_band=low",
+      "recent_usage_count=8"
+    ],
+    "execution_status": "READY",
+    "experiment_group": "treatment",
+    "lifecycle": "active",
+    "opportunity_id": "SYN-OPP-2D4D4856E4F8",
+    "priority": "P1",
+    "review_status": "pending",
+    "rule_version": "SYN-RULE-RENEWAL-001",
+    "ruleset_version": "SYN-RULESET-0.1.0",
+    "scenario": "renewal",
+    "snapshot_date": "2026-01-15",
+    "subject_id": "SYN-ORG-001",
+    "synthetic": true,
+    "value_tier": "A"
+  },
+  {
+    "evidence": [
+      "organization_signal=verified",
+      "recent_usage_count=8"
+    ],
+    "execution_status": "READY",
+    "experiment_group": "treatment",
+    "lifecycle": "active",
+    "opportunity_id": "SYN-OPP-2F66DC7F4E92",
+    "priority": "P1",
+    "review_status": "pending",
+    "rule_version": "SYN-RULE-STRATEGIC-001",
+    "ruleset_version": "SYN-RULESET-0.1.0",
+    "scenario": "strategic_review",
+    "snapshot_date": "2026-01-15",
+    "subject_id": "SYN-ORG-001",
+    "synthetic": true,
+    "value_tier": "B"
+  },
+  {
+    "evidence": [
+      "organization_signal=unverified",
+      "recent_usage_count=12"
+    ],
+    "execution_status": "REVIEW",
+    "experiment_group": "treatment",
+    "lifecycle": "active",
+    "opportunity_id": "SYN-OPP-3531906F946B",
+    "priority": "P1",
+    "review_status": "pending",
+    "rule_version": "SYN-RULE-STRATEGIC-001",
+    "ruleset_version": "SYN-RULESET-0.1.0",
+    "scenario": "strategic_review",
+    "snapshot_date": "2026-01-15",
+    "subject_id": "SYN-PRO-002",
+    "synthetic": true,
+    "value_tier": "B"
   }
 ]

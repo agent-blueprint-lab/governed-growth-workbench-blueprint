@@ -1,74 +1,125 @@
 # Governed Growth Workbench Blueprint
 
-一套面向存量用户运营的、可审计的增长决策工作台参考实现。它把分散的事实数据转换成每日画像快照、规则机会、AI 解释建议和人工任务，并通过对照组与结果回写验证增量效果。
+[![CI](https://github.com/agent-blueprint-lab/governed-growth-workbench-blueprint/actions/workflows/ci.yml/badge.svg)](https://github.com/agent-blueprint-lab/governed-growth-workbench-blueprint/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> 本仓库仅包含通用方法、合成数据和示例代码。没有任何真实公司、客户、账号、业务表、内部域名、联系方式、金额明细或生产环境配置。
+A small, runnable reference implementation for rule-first growth decisions with privacy guardrails, deterministic replay, fail-closed data handling, and mandatory human review.
 
-## 为什么需要它
+**Project status:** early-stage reference implementation. This repository does not claim production deployments, external users, downloads, or broad adoption.
 
-许多增长系统直接从“有数据”跳到“让模型自动触达”。本蓝图采用更稳妥的顺序：
+[中文说明](README.zh-CN.md)
 
-1. SQL/规则计算可验证事实；
-2. 参数化规则生成候选机会；
-3. AI 只做解释、排序建议和沟通草稿；
-4. 负责人审核、分配或导出任务；
-5. 冻结入池快照，用实验结果验证规则；
-6. 数据充分后，再评估预测模型或自动化执行。
+## Why this exists
+
+Many automation projects jump from available data to model-generated outreach. This project demonstrates a narrower and auditable sequence:
+
+1. validate a minimal synthetic profile contract;
+2. evaluate versioned, deterministic rules;
+3. freeze evidence and experiment assignment;
+4. stop on unavailable data or contact restrictions;
+5. route every actionable result to human review;
+6. record machine-readable audit events.
+
+The implementation does not connect to a database, model API, CRM, messaging channel, or payment system. It cannot contact anyone or change an external system.
 
 ```mermaid
 flowchart LR
-  A[只读数据源] --> B[每日画像快照]
-  B --> C[参数化规则与机会池]
-  C --> D[AI 解释与建议]
-  D --> E[人工审核与任务分配]
-  E --> F[人工跟进或受控触达]
-  F --> G[结果回写与增量评估]
-  G --> C
+  A[Synthetic profile snapshots] --> B[JSON Schema validation]
+  B --> C[Versioned rule evaluation]
+  C --> D[Deterministic opportunity snapshot]
+  D --> E{Execution gate}
+  E -->|READY or REVIEW| F[Human review]
+  E -->|HOLD or CONTROL| G[No action]
+  B -->|late or blocked| H[Fail closed + audit event]
 ```
 
-## 核心边界
+## Quick start
 
-- 规则先行：首期不依赖黑盒预测分数。
-- AI 不改事实：AI 不得补造身份、需求、关系、收入或意愿。
-- 人工执行：默认不直接调用短信、邮件、CRM 写入或支付接口。
-- 最小必要：提示词不包含电话、邮箱、详细地址、原始咨询内容或付款明细。
-- 可追溯：每条机会都保存画像日期、规则版本、证据字段、审核人与结果。
-- 可回滚：规则参数与页面版本均可恢复，异常数据只报警、不生成执行名单。
+Requires Python 3.11 or newer.
 
-## 仓库结构
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+make verify
+```
+
+`make verify` compiles the package, scans public files for common sensitive-data patterns, runs the executable test suite, and writes a deterministic demo replay to `build/`.
+
+Run the demo directly:
+
+```bash
+ggw run \
+  --profiles examples/profiles.synthetic.json \
+  --rules config/rules.synthetic.json \
+  --output build/opportunities.json \
+  --audit-output build/audit-events.json
+```
+
+Generate a new deterministic synthetic dataset:
+
+```bash
+ggw generate-synthetic \
+  --count 12 \
+  --seed 7 \
+  --snapshot-date 2026-01-15 \
+  --output build/profiles.synthetic.json
+```
+
+Open `web/index.html` locally for a static interface illustration. The UI is intentionally disconnected from real services.
+
+## Inputs and outputs
+
+- `examples/profiles.synthetic.json`: synthetic daily profile snapshots.
+- `config/rules.synthetic.json`: demo-only rules and lifecycle parameters.
+- `examples/opportunities.json`: expected deterministic opportunity snapshot.
+- `schemas/`: JSON Schema contracts for profiles, rules, opportunities, and audit events.
+
+Every public sample identifier starts with `SYN-`. The rule file must contain `"synthetic_demo_only": true`; otherwise validation fails. Numeric demo parameters are arbitrary test fixtures, not recommended operating thresholds.
+
+The engine returns four execution states:
+
+| State | Meaning |
+| --- | --- |
+| `READY` | Data and contact gates pass; a human may review the opportunity. |
+| `REVIEW` | Identity, relationship, or contact permission is unresolved. |
+| `HOLD` | A contact restriction prevents action. |
+| `CONTROL` | The subject is in a deterministic experiment control group. |
+
+Profiles with `late` or `blocked` data status produce no opportunity. They produce only a `data_blocked` audit event.
+
+## Repository map
 
 ```text
-docs/       架构、流程、角色、模型与安全说明
-schemas/    画像快照、机会、决策和审计事件 JSON Schema
-prompts/    受治理的 Agent 系统策略
-examples/   纯合成数据示例
-tests/      安全与验收场景
-web/        可直接打开的静态交互演示
+config/      Synthetic rule configuration and local publication denylist
+docs/        Architecture, governance, threat model, and maintainer workflow
+examples/    Synthetic inputs and deterministic expected output
+prompts/     Optional governed explanation policy; no model client is included
+schemas/     Public JSON Schema contracts
+src/         Reference engine, CLI, generator, validation, and publication scan
+tests/       Executable safety, replay, schema, and generator tests
+web/         Offline static UI illustration
+.github/     CI, release automation, contribution templates, and ownership
 ```
 
-## 快速查看
+## Security and governance guarantees
 
-直接用浏览器打开 `web/index.html`。页面中的名称、数量、分值、阈值和任务状态全部为合成演示数据，不代表任何真实业务表现。
+- Rule outputs never trigger external actions.
+- A non-ready data state fails closed.
+- Contact restrictions override priority and value tiers.
+- Control-group assignment is stable for the same subject and rule-set version.
+- Inputs, rules, opportunities, and audit events are schema-validated.
+- Publication scanning blocks common contact, credential, private-network, and local-path patterns.
+- Real organization names can be added to `config/publication-denylist.txt` in a private fork before public release.
 
-## 从规则到模型的升级门槛
+This reference scanner is a guardrail, not a complete data-loss-prevention system. Review the [security policy](SECURITY.md), [threat model](docs/threat-model.md), and [publication checklist](docs/publication-safety-checklist.md) before adapting the project.
 
-预测模型只有在以下条件同时满足时，才建议进入影子评估：
+## Contributing and maintenance
 
-- 统一主体 ID 和稳定的历史快照；
-- 明确的正负样本定义与观察窗口；
-- 至少一个可复现的规则基线；
-- 时间外验证、校准度、覆盖率和分群公平性检查；
-- 模型失败时可回退到规则；
-- 通过隐私、安全和人工审核评审。
+Use a bug or rule-proposal issue, make changes through a pull request, and run `make verify`. Security reports and accidental sensitive-data exposure must use a private GitHub Security Advisory, not a public issue.
 
-模型在影子阶段不得改变生产名单、实验对照组或触达动作。
-
-## 适用与不适用
-
-适用于：续费/复购提示、使用中断核验、重点账户识别、合作候选、人工任务分配和增量复盘。
-
-不适用于：未经审核的自动营销、敏感个人画像、法律/医疗/信贷结论、基于受保护属性的差别对待，或任何无法说明证据来源的“智能判断”。
+See [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md), [ROADMAP.md](ROADMAP.md), and [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-MIT。详见 [LICENSE](LICENSE)。
+MIT. See [LICENSE](LICENSE).

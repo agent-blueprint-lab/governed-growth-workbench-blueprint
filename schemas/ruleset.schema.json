@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Synthetic Rule Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ruleset_version", "synthetic_demo_only", "control_percentage", "lifecycle_days", "rules"],
+  "properties": {
+    "ruleset_version": { "type": "string", "pattern": "^SYN-RULESET-[A-Z0-9.-]+$" },
+    "synthetic_demo_only": { "const": true },
+    "control_percentage": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "lifecycle_days": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at_risk", "dormant", "lost"],
+      "properties": {
+        "at_risk": { "type": "integer", "minimum": 1 },
+        "dormant": { "type": "integer", "minimum": 1 },
+        "lost": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rule_id", "scenario", "priority", "value_tier", "when", "evidence_fields"],
+        "properties": {
+          "rule_id": { "type": "string", "pattern": "^SYN-RULE-[A-Z0-9-]+$" },
+          "scenario": { "enum": ["renewal", "reactivation", "strategic_review", "partner_review"] },
+          "priority": { "enum": ["P0", "P1", "P2"] },
+          "value_tier": { "enum": ["S", "A", "B", "C", "unknown"] },
+          "when": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "has_prior_purchase": { "type": "boolean" },
+              "available_units_band_in": {
+                "type": "array",
+                "items": { "enum": ["unknown", "none", "low", "medium", "high"] },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "recent_usage_count_min": { "type": "integer", "minimum": 0 },
+              "days_since_activity_min": { "type": "integer", "minimum": 0 },
+              "organization_signal_in": {
+                "type": "array",
+                "items": { "enum": ["none", "unverified", "verified", "unknown"] },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            }
+          },
+          "evidence_fields": {
+            "type": "array",
+            "items": {
+              "enum": ["days_since_activity", "recent_usage_count", "available_units_band", "has_prior_purchase", "organization_signal", "contact_status"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

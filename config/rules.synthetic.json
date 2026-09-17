@@ -1,0 +1,46 @@
+{
+  "ruleset_version": "SYN-RULESET-0.1.0",
+  "synthetic_demo_only": true,
+  "control_percentage": 20,
+  "lifecycle_days": {
+    "at_risk": 10,
+    "dormant": 20,
+    "lost": 40
+  },
+  "rules": [
+    {
+      "rule_id": "SYN-RULE-RENEWAL-001",
+      "scenario": "renewal",
+      "priority": "P1",
+      "value_tier": "A",
+      "when": {
+        "has_prior_purchase": true,
+        "available_units_band_in": ["none", "low"],
+        "recent_usage_count_min": 1
+      },
+      "evidence_fields": ["has_prior_purchase", "available_units_band", "recent_usage_count"]
+    },
+    {
+      "rule_id": "SYN-RULE-REACTIVATION-001",
+      "scenario": "reactivation",
+      "priority": "P2",
+      "value_tier": "B",
+      "when": {
+        "days_since_activity_min": 20,
+        "has_prior_purchase": true
+      },
+      "evidence_fields": ["days_since_activity", "has_prior_purchase"]
+    },
+    {
+      "rule_id": "SYN-RULE-STRATEGIC-001",
+      "scenario": "strategic_review",
+      "priority": "P1",
+      "value_tier": "B",
+      "when": {
+        "organization_signal_in": ["unverified", "verified"],
+        "recent_usage_count_min": 1
+      },
+      "evidence_fields": ["organization_signal", "recent_usage_count"]
+    }
+  ]
+}

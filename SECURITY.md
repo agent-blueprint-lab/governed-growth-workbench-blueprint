@@ -1,25 +1,26 @@
 # Security Policy
 
+## Supported versions
+
+Security fixes target the latest published release and the `main` branch while the project is in early development.
+
+## Report privately
+
+Use a private [GitHub Security Advisory](https://github.com/agent-blueprint-lab/governed-growth-workbench-blueprint/security/advisories/new) for vulnerabilities or accidental sensitive-data exposure. Do not include real data, credentials, or private logs in a public issue.
+
 ## Public repository boundary
 
-本仓库禁止提交：
+This repository must not contain real people, customers, organizations, products, contact details, account or order identifiers, raw content, internal database names, private domains, local user paths, network addresses, credentials, revenue, user counts, conversion metrics, or production thresholds.
 
-- 真实客户、员工、供应商或合作伙伴名称；
-- 手机号、邮箱、地址、证件号、账户 ID、订单号或原始内容；
-- 生产表名、字段清单、内部域名、服务器路径、IP、令牌和密钥；
-- 真实收入、用户规模、转化率、阈值、模型表现或内部截图；
-- 可反推出组织、产品或个人身份的组合信息。
+All examples must be synthetic. Public sample identifiers must use the `SYN-*` prefix.
 
-所有示例必须使用合成数据。示例 ID 仅允许使用 `SYN-*` 前缀。
+## Security model
 
-## Deployment guidance
+- The reference engine accepts local JSON only and performs no network requests.
+- It has no connector for messaging, CRM, databases, payments, or file export.
+- Non-ready data fails closed and generates only an audit event.
+- Contact restrictions and experiment controls override priority.
+- Inputs and outputs are checked against JSON Schema.
+- `make verify` includes a repository publication scan and negative security tests.
 
-- Agent 只读访问经过授权的视图，不直接访问原始业务库。
-- 敏感字段在进入模型前删除或令牌化；UI 按角色单独授权查询。
-- 默认禁止外部网络、任意文件访问和执行型业务工具。
-- 记录输入摘要、规则版本、模型版本、输出、审核人、时间和后续动作。
-- 数据迟到、口径异常或关键字段缺失时，任务应 fail closed：只报警，不生成执行名单。
-
-## Reporting a vulnerability
-
-请通过 GitHub Security Advisory 私下报告。不要在公开 Issue 中提交真实数据、日志、访问凭据或内部拓扑。
+The scanner is a defense-in-depth control, not proof that a repository is safe to publish. Maintainers must review the diff and the [publication checklist](docs/publication-safety-checklist.md) before every release.

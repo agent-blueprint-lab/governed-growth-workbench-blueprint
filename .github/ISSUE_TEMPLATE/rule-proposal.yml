@@ -1,0 +1,34 @@
+name: Rule proposal
+description: Propose a generic, testable rule using synthetic examples.
+title: "[Rule]: "
+labels: [rule-proposal]
+body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: What generic decision should this rule support?
+    validations:
+      required: true
+  - type: textarea
+    id: conditions
+    attributes:
+      label: Inputs, conditions, and exclusions
+      description: Avoid real thresholds; mark demo values as synthetic.
+    validations:
+      required: true
+  - type: textarea
+    id: review
+    attributes:
+      label: Human review and rollback
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checks
+      options:
+        - label: The proposal uses generic names and SYN-prefixed examples only.
+          required: true
+        - label: The proposal does not introduce automatic external actions.
+          required: true

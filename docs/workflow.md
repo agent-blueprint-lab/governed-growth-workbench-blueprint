@@ -1,32 +1,42 @@
 # Workflow
 
-## 日运行流程
+## Reference run
 
-1. 检查关键数据源的完成时间、分区和行数波动。
-2. 按主体生成可复现的每日画像快照。
-3. 计算事实标签和参数化规则。
-4. 去除重复机会，冻结规则版本和证据。
-5. 按稳定随机种子划分实验组与对照组。
-6. Agent 输出“事实—判断—建议—未知项”。
-7. 负责人审核、排除、暂缓或分配人工任务。
-8. 回写联系结果、真实需求、下一步和拒绝原因。
-9. 在预设窗口评估有效需求与增量转化。
+1. Load a list of synthetic profile snapshots.
+2. Validate every profile and the synthetic rule set.
+3. Stop each non-ready profile and record a data-quality audit event.
+4. Evaluate matching rules for ready profiles.
+5. Create stable opportunity identifiers and evidence strings.
+6. Assign a deterministic experiment group.
+7. Apply contact and relationship gates.
+8. Validate opportunity and audit output before writing files.
+9. Route `READY` and `REVIEW` results to people; never execute an external action automatically.
 
-## 跨机会归因
+## Gate precedence
 
-同一主体可能在不同日期命中不同机会。归因采用“任务冻结、画像可变”：
+```text
+data_status != ready
+  → no opportunity
 
-- 原任务保留创建时的场景、规则、实验组和证据；
-- 后续画像变化作为新事件记录，不重写历史；
-- 若后续场景与原任务冲突，由规则确定合并、升级或终止；
-- 转化先归属于最早合格且未被取消的任务，再用多触点报告补充解释；
-- 增量效果以随机对照组为主，不只看触达后的自然转化。
+contact_status == hold
+  → HOLD
 
-## 机会卡六问
+contact_status == unknown or relationship unverified
+  → REVIEW
 
-1. 是谁：主体类型与可展示名称，不展示联系方式。
-2. 为什么入池：命中规则和关键事实。
-3. 值不值得人工跟：长期价值分层及证据。
-4. 现在急不急：当前状态与本轮优先级。
-5. 能不能联系：合规、拒绝、投诉和数据完整性状态。
-6. 谁跟、怎么跟：责任角色、目标、问题清单与停止条件。
+stable control assignment
+  → CONTROL
+
+otherwise
+  → READY
+```
+
+`HOLD`, `REVIEW`, and `CONTROL` cannot be overridden by a high value tier or priority.
+
+## Replay and change control
+
+Changing a rule requires a new rule or rule-set version, updated tests, and an updated expected snapshot. Existing output remains attributable to the version that created it. Observation windows and numeric parameters belong in the demo rule file; they must not be hidden in prompts or UI code.
+
+## Optional explanation layer
+
+`prompts/system-policy.md` is a provider-neutral policy example for a downstream explanation layer. This repository includes no model client. If a downstream project adds one, it should receive only validated opportunity evidence and must preserve the same execution gate and human-review boundary.

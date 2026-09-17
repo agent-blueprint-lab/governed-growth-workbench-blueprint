@@ -1,0 +1,72 @@
+[
+  {
+    "subject_id": "SYN-ORG-001",
+    "snapshot_date": "2026-01-15",
+    "subject_type": "organization",
+    "data_status": "ready",
+    "facts": {
+      "days_since_activity": 2,
+      "recent_usage_count": 8,
+      "available_units_band": "low",
+      "has_prior_purchase": true,
+      "organization_signal": "verified",
+      "contact_status": "clear"
+    }
+  },
+  {
+    "subject_id": "SYN-PRO-002",
+    "snapshot_date": "2026-01-15",
+    "subject_type": "professional",
+    "data_status": "ready",
+    "facts": {
+      "days_since_activity": 6,
+      "recent_usage_count": 12,
+      "available_units_band": "medium",
+      "has_prior_purchase": true,
+      "organization_signal": "unverified",
+      "contact_status": "unknown"
+    }
+  },
+  {
+    "subject_id": "SYN-IND-003",
+    "snapshot_date": "2026-01-15",
+    "subject_type": "individual",
+    "data_status": "ready",
+    "facts": {
+      "days_since_activity": 28,
+      "recent_usage_count": 0,
+      "available_units_band": "high",
+      "has_prior_purchase": true,
+      "organization_signal": "none",
+      "contact_status": "hold"
+    }
+  },
+  {
+    "subject_id": "SYN-ORG-004",
+    "snapshot_date": "2026-01-15",
+    "subject_type": "organization",
+    "data_status": "blocked",
+    "facts": {
+      "days_since_activity": null,
+      "recent_usage_count": null,
+      "available_units_band": "unknown",
+      "has_prior_purchase": false,
+      "organization_signal": "unknown",
+      "contact_status": "unknown"
+    }
+  },
+  {
+    "subject_id": "SYN-IND-CONTROL-005",
+    "snapshot_date": "2026-01-15",
+    "subject_type": "individual",
+    "data_status": "ready",
+    "facts": {
+      "days_since_activity": 1,
+      "recent_usage_count": 1,
+      "available_units_band": "low",
+      "has_prior_purchase": true,
+      "organization_signal": "none",
+      "contact_status": "clear"
+    }
+  }
+]
